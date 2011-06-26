@@ -28,34 +28,8 @@
 #include <opengl/opengl.h>
 #include <mousepoll/mousepoll.h>
 
-#include <cairo-xlib-xrender.h>
-#include <cairo.h>
-
 #include "keystone_options.h"
 
-
-/* enums */
-typedef enum
-{
-    NoTransformation,
-    MiniScreen,
-    Sliding
-} ScreenTransformation;
-
-/* FIXME: put into own class? */
-typedef struct _KeystoneCairoContext
-{
-    Pixmap          pixmap;
-    GLTexture::List texture;
-
-    cairo_surface_t *surface;
-    cairo_t         *cr;
-
-    int width;
-    int height;
-} KeystoneCairoContext;
-
-/* classes */
 class KeystoneScreen :
     public ScreenInterface,
     public CompositeScreenInterface,
@@ -64,16 +38,6 @@ class KeystoneScreen :
     public KeystoneOptions
 {
     public:
-	enum Direction
-	{
-	    Up = 0,
-	    Left,
-	    Down,
-	    Right,
-	    Next,
-	    Prev
-	};
-
 	KeystoneScreen (CompScreen *s);
 	~KeystoneScreen ();
 
@@ -95,81 +59,17 @@ class KeystoneScreen :
 	void matchExpHandlerChanged ();
 	void matchPropertyChanged (CompWindow *);
 
-	void createCairoContexts (bool);
-	void setupCairoContext (KeystoneCairoContext &);
-	void destroyCairoContext (KeystoneCairoContext &);
-	void clearCairoLayer (cairo_t *);
-	void drawSwitcherBackground ();
-	void drawThumb ();
-	void drawHighlight ();
-	void drawArrow ();
-	void drawCairoTextureOnScreen();
-
 	void releaseMoveWindow ();
-	void computeTranslation (float &, float &);
-	void determineMovementAngle ();
-	bool checkDestination (unsigned int, unsigned int);
-	void checkAmount (int, int, int &, int &);
-
-	bool initiate (CompAction *, CompAction::State, CompOption::Vector &,
-		       Direction, bool);
-	bool terminate (CompAction *, CompAction::State, CompOption::Vector &);
-	bool initiateFlip (Direction, CompAction::State);
-
-	bool moveViewport (int, int, Window);
 
 	void optionChanged (CompOption *opt, KeystoneOptions::Options num);
-	void toggleEdges (bool);
 
-	void positionUpdate (const CompPoint &pos);
-	void updateScreenEdgeRegions ();
+        bool ToggleViewportEnableDisable();
+        bool AdjustKeystone(float h, float v);
 
 	CompositeScreen *cScreen;
 	GLScreen        *glScreen;
 
-	bool moving; /* Used to track miniview movement */
-	bool showPreview;
-
-	float        curPosX;
-	float        curPosY;
-	unsigned int gotoX;
-	unsigned int gotoY;
-
-	int direction; /* >= 0 : direction arrow angle, < 0 : no direction */
-
-	int          boxTimeout;
-	unsigned int boxOutputDevice;
-	void         *grabIndex;
-	int          timer;
-
-	Window moveWindow;
-
-	bool focusDefault;
-
-	ScreenTransformation transform;
-	CompOutput          *currOutput;
-
-	GLWindowPaintAttrib mSAttribs;
-	float               mSzCamera;
-
-	int firstViewportX;
-	int firstViewportY;
-	int viewportWidth;
-	int viewportHeight;
-	int viewportBorder;
-
-	int moveWindowX;
-	int moveWindowY;
-
-	KeystoneCairoContext switcherContext;
-	KeystoneCairoContext thumbContext;
-	KeystoneCairoContext highlightContext;
-	KeystoneCairoContext arrowContext;
-
-	MousePoller	 poller;
-	bool		 edgeDrag;
-	CompRegion	 edgeRegion;
-	CompRegion	 noEdgeRegion;
+//	MousePoller	 poller;
 };
 
 class KeystoneWindow :
@@ -188,15 +88,7 @@ class KeystoneWindow :
 
 	CompWindow *window;
 	GLWindow   *glWindow;
-
-	bool isSliding;
 };
-
-#define WALL_SCREEN(s) \
-    KeystoneScreen *ws = KeystoneScreen::get (s)
-
-#define WALL_WINDOW(w) \
-    KeystoneWindow *ww = KeystoneWindow::get (w)
 
 class KeystonePluginVTable :
     public CompPlugin::VTableForScreenAndWindow <KeystoneScreen, KeystoneWindow>
