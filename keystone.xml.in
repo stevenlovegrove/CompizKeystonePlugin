@@ -27,20 +27,39 @@
 					<_long>Enable keystone transforms on window manager</_long>
 					<default>true</default>
 				</option>
+				<option name="ks_horz" type="float">
+					<_short>Vertical Keystone</_short>
+					<default>0</default>
+					<min>-100</min>
+					<max>100</max>
+					<precision>0.01</precision>
+				</option>
 				<option name="ks_vert" type="float">
 					<_short>Horizontal Keystone</_short>
-					<_long>Horizontal Keystone</_long>
+					<default>0</default>
+					<min>-100</min>
+					<max>100</max>
+					<precision>0.01</precision>
+				</option>
+				<option name="ks_posx" type="float">
+					<_short>Horizontal pos</_short>
 					<default>0</default>
 					<min>-1</min>
 					<max>1</max>
 					<precision>0.01</precision>
 				</option>
-				<option name="ks_horz" type="float">
-					<_short>Vertical Keystone</_short>
-					<_long>Vertical Keystone</_long>
+				<option name="ks_posy" type="float">
+					<_short>Vertical pos</_short>
 					<default>0</default>
 					<min>-1</min>
 					<max>1</max>
+					<precision>0.01</precision>
+				</option>
+				<option name="ks_scale" type="float">
+					<_short>scale</_short>
+					<default>0</default>
+					<min>-10</min>
+					<max>10</max>
 					<precision>0.01</precision>
 				</option>
 			</group>
@@ -70,6 +89,33 @@
 					<_long>Move along the keystone down</_long>
 					<default>&lt;Control&gt;&lt;Alt&gt;Down</default>
 				</option>
+
+				<option name="leftx_key" type="key">
+					<_short>Move Left</_short>
+					<default>&lt;Super&gt;&lt;Alt&gt;Left</default>
+				</option>
+				<option name="rightx_key" type="key">
+					<_short>Move Right</_short>
+					<default>&lt;Super&gt;&lt;Alt&gt;Right</default>
+				</option>
+				<option name="upx_key" type="key">
+					<_short>Move Up</_short>
+					<default>&lt;Super&gt;&lt;Alt&gt;Up</default>
+				</option>
+				<option name="downx_key" type="key">
+					<_short>Move Down</_short>
+					<default>&lt;Super&gt;&lt;Alt&gt;Down</default>
+				</option>
+
+				<option name="ups_key" type="key">
+					<_short>Scale Up</_short>
+					<default>&lt;Super&gt;&lt;Alt&gt;p</default>
+				</option>
+				<option name="downs_key" type="key">
+					<_short>Scale Down</_short>
+					<default>&lt;Super&gt;&lt;Alt&gt;o</default>
+				</option>
+
 			</group>
 			<group>
 				<_short>Viewport Switching</_short>

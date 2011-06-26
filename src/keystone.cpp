@@ -76,6 +76,53 @@ void KeystoneScreen::donePaint()
     cScreen->donePaint ();
 }
 
+inline void vert(float* m, float a)
+{
+    m[0] = 1;
+    m[1] = 0;
+    m[2] = 0;
+    m[3] = 0;
+
+    m[4] = 0;
+    m[5] = cos(a);
+    m[6] = -sin(a);
+    m[7] = 0;
+
+    m[8] = 0;
+    m[9] = sin(a);
+    m[10] = cos(a);
+    m[11] = 0;
+
+    m[12] = 0;
+    m[13] = 0;
+    m[14] = 0;
+    m[15] = 1;
+}
+
+inline void horiz(float* m, float a)
+{
+    m[0] = cos(a);
+    m[1] = 0;
+    m[2] = sin(a);
+    m[3] = 0;
+
+    m[4] = 0;
+    m[5] = 1;
+    m[6] = 0;
+    m[7] = 0;
+
+    m[8] = -sin(a);
+    m[9] = 0;
+    m[10] = cos(a);
+    m[11] = 0;
+
+    m[12] = 0;
+    m[13] = 0;
+    m[14] = 0;
+    m[15] = 1;
+
+}
+
 bool KeystoneScreen::glPaintOutput (
     const GLScreenPaintAttrib &attrib,
     const GLMatrix            &matrix,
@@ -83,19 +130,13 @@ bool KeystoneScreen::glPaintOutput (
     CompOutput                *output,
     unsigned int              mask
 ) {
-    mask |= PAINT_SCREEN_TRANSFORMED_MASK |
-            PAINT_SCREEN_WITH_TRANSFORMED_WINDOWS_MASK;
-
-    GLMatrix sMatrix (matrix);
     if( optionGetKsEnable() )
     {
-        const float ksh = optionGetKsHorz();
-        const float ksv = optionGetKsVert();
-//        sMatrix.rotate(ksh,0,0,1);
-        sMatrix.scale(1+ksh,1+ksv,1.0);
+        mask |= PAINT_SCREEN_TRANSFORMED_MASK |
+                PAINT_SCREEN_WITH_TRANSFORMED_WINDOWS_MASK;
     }
-    bool status = glScreen->glPaintOutput(attrib, sMatrix, region, output, mask);
-    return status;
+
+    return glScreen->glPaintOutput(attrib, matrix, region, output, mask);
 }
 
 void KeystoneScreen::glPaintTransformedOutput (
@@ -112,11 +153,24 @@ void KeystoneScreen::glPaintTransformedOutput (
     GLMatrix sMatrix (matrix);
     if( optionGetKsEnable() )
     {
-        const float ksh = optionGetKsHorz();
-        const float ksv = optionGetKsVert();
-//        sMatrix.rotate(ksh,0,0,1);
-        sMatrix.scale(1+ksh,1+ksv,1.0);
+        const float rh = optionGetKsHorz();
+        const float rv = optionGetKsVert();
+        const float ph = optionGetKsPosx();
+        const float pv = optionGetKsPosy();
+        const float s = optionGetKsScale();
+        float m[4*4];
+        horiz(m,rh);
+        GLMatrix mhr(m);
+        vert(m,rv);
+        GLMatrix mvr(m);
+
+//        sMatrix = mvr * mhr * matrix;
+        sMatrix.rotate(-100*rh,0,1,0);
+        sMatrix.rotate(100*rv,1,0,0);
+        sMatrix.translate(ph,pv,s);
     }
+    glScreen->clearTargetOutput (GL_COLOR_BUFFER_BIT);
+
     glScreen->glPaintTransformedOutput(attrib, sMatrix, region, output, mask);
 }
 
@@ -136,7 +190,6 @@ void KeystoneScreen::optionChanged (CompOption           *opt,
     case KeystoneOptions::KsEnable:
     case KeystoneOptions::KsVert:
     case KeystoneOptions::KsHorz:
-//        cout << optionGetKsEnable() << ", " << optionGetKsHorz()  << ", " << optionGetKsVert() << endl;
         cScreen->damageScreen();
         break;
 
@@ -188,6 +241,25 @@ bool KeystoneScreen::AdjustKeystone(float hinc, float vinc)
     return true;
 }
 
+bool KeystoneScreen::AdjustPos(float hinc, float vinc)
+{
+    const float h = optionGetKsPosx() + hinc;
+    const float v = optionGetKsPosy() + vinc;
+    CompOption::Value vh(h);
+    CompOption::Value vv(v);
+    getOptions()[KsPosx].set(vh);
+    getOptions()[KsPosy].set(vv);
+    return true;
+}
+
+bool KeystoneScreen::AdjustScale(float sinc)
+{
+    const float s = optionGetKsScale() + sinc;
+    CompOption::Value v(s);
+    getOptions()[KsScale].set(v);
+    return true;
+}
+
 KeystoneScreen::KeystoneScreen (CompScreen *screen) :
     PluginClassHandler <KeystoneScreen, CompScreen> (screen),
     KeystoneOptions (),
@@ -206,6 +278,14 @@ KeystoneScreen::KeystoneScreen (CompScreen *screen) :
     optionSetUpKeyInitiate(      boost::bind(&KeystoneScreen::AdjustKeystone, this, 0, +inc));
     optionSetDownKeyInitiate(    boost::bind(&KeystoneScreen::AdjustKeystone, this, 0, -inc));
 
+    optionSetLeftxKeyInitiate(   boost::bind(&KeystoneScreen::AdjustPos, this, -inc, 0));
+    optionSetRightxKeyInitiate(  boost::bind(&KeystoneScreen::AdjustPos, this, +inc, 0));
+    optionSetUpxKeyInitiate(     boost::bind(&KeystoneScreen::AdjustPos, this, 0, +inc));
+    optionSetDownxKeyInitiate(   boost::bind(&KeystoneScreen::AdjustPos, this, 0, -inc));
+
+    optionSetDownsKeyInitiate(   boost::bind(&KeystoneScreen::AdjustScale, this, -inc));
+    optionSetUpsKeyInitiate(     boost::bind(&KeystoneScreen::AdjustScale, this, +inc));
+
 #define setNotify(func) \
     optionSet##func##Notify (boost::bind (&KeystoneScreen::optionChanged, \
 					  this, _1, _2))
@@ -213,6 +293,9 @@ KeystoneScreen::KeystoneScreen (CompScreen *screen) :
     setNotify (KsEnable);
     setNotify (KsVert);
     setNotify (KsHorz);
+    setNotify (KsPosx);
+    setNotify (KsPosy);
+    setNotify (KsScale);
 
 //    poller.setCallback (boost::bind (&KeystoneScreen::positionUpdate, this, _1));
 }

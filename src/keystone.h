@@ -65,6 +65,8 @@ class KeystoneScreen :
 
         bool ToggleViewportEnableDisable();
         bool AdjustKeystone(float h, float v);
+        bool AdjustPos(float h, float v);
+        bool AdjustScale(float s);
 
 	CompositeScreen *cScreen;
 	GLScreen        *glScreen;
