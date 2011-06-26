@@ -239,6 +239,7 @@ bool KeystoneScreen::AdjustKeystone(float hinc, float vinc)
     CompOption::Value vv(v);
     getOptions()[KsHorz].set(vh);
     getOptions()[KsVert].set(vv);
+    cScreen->damageScreen();
     return true;
 }
 
@@ -250,6 +251,7 @@ bool KeystoneScreen::AdjustPos(float hinc, float vinc)
     CompOption::Value vv(v);
     getOptions()[KsPosx].set(vh);
     getOptions()[KsPosy].set(vv);
+    cScreen->damageScreen();
     return true;
 }
 
@@ -258,6 +260,7 @@ bool KeystoneScreen::AdjustScale(float sinc)
     const float s = optionGetKsScale() + sinc;
     CompOption::Value v(s);
     getOptions()[KsScale].set(v);
+    cScreen->damageScreen();
     return true;
 }
 
