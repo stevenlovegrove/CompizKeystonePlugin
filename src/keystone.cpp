@@ -227,6 +227,7 @@ bool KeystoneScreen::ToggleViewportEnableDisable()
     const bool state = optionGetKsEnable();
     CompOption::Value v(!state);
     getOptions()[KsEnable].set(v);
+    cScreen->damageScreen();
     return true;
 }
 
