@@ -4,16 +4,11 @@
 		<_short>Keystone Correct</_short>
 		<_long>Keystone Correct Plugin</_long>
 		<category>Desktop</category>
-		<feature>largedesktop</feature>
 		<deps>
 			<relation type="after">
 				<plugin>composite</plugin>
 				<plugin>opengl</plugin>
 				<plugin>decor</plugin>
-			</relation>
-			<relation type="before">
-				<plugin>wobbly</plugin>
-				<plugin>fade</plugin>
 			</relation>
 			<requirement>
 				<plugin>opengl</plugin>

@@ -326,9 +326,6 @@ KeystonePluginVTable::init ()
 	return false;
     if (!CompPlugin::checkPluginABI ("opengl", COMPIZ_OPENGL_ABI))
 	return false;
-    if (!CompPlugin::checkPluginABI ("mousepoll", COMPIZ_MOUSEPOLL_ABI))
-	return false;
-
     return true;
 }
 
