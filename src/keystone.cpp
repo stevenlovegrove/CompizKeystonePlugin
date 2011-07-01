@@ -17,10 +17,6 @@ using namespace std;
 
 COMPIZ_PLUGIN_20090315 (keystone, KeystonePluginVTable);
 
-void KeystoneScreen::releaseMoveWindow ()
-{
-}
-
 void KeystoneScreen::handleEvent (XEvent *event)
 {
     switch (event->type) {
@@ -28,19 +24,19 @@ void KeystoneScreen::handleEvent (XEvent *event)
 //	if (event->xclient.message_type == Atoms::desktopViewport) {}
 //	else if (event->xclient.message_type == Atoms::xdndEnter) {}
 //	else if (event->xclient.message_type == Atoms::xdndLeave) {}
-	break;
+        break;
 
-	case FocusIn:
-	case FocusOut:
+        case FocusIn:
+        case FocusOut:
 //	    if (event->xfocus.mode == NotifyGrab) poller.start ();
 //	    else if (event->xfocus.mode == NotifyUngrab) poller.stop ();
-	break;
+        break;
 
-	case ConfigureNotify:
+        case ConfigureNotify:
 //	     if (event->xconfigure.window == screen->root ())
 //		updateScreenEdgeRegions ();
 
-	break;
+        break;
     }
 
     screen->handleEvent (event);
@@ -183,43 +179,9 @@ bool KeystoneWindow::glPaint (
     return glWindow->glPaint (attrib, matrix, region, mask);
 }
 
-void KeystoneScreen::optionChanged (CompOption           *opt,
-			   KeystoneOptions::Options num)
+void KeystoneScreen::optionChanged (CompOption *opt, KeystoneOptions::Options num)
 {
-    switch(num) {
-    case KeystoneOptions::KsEnable:
-    case KeystoneOptions::KsVert:
-    case KeystoneOptions::KsHorz:
-        cScreen->damageScreen();
-        break;
-
-    default:
-	break;
-    }
-}
-
-bool KeystoneScreen::setOptionForPlugin(
-    const char        *plugin,
-    const char        *name,
-    CompOption::Value &value)
-{
-    bool status = screen->setOptionForPlugin (plugin, name, value);
-
-//    if (strcmp (plugin, "core") == 0)
-//    {
-//    }
-
-    return status;
-}
-
-void KeystoneScreen::matchExpHandlerChanged ()
-{
-    screen->matchExpHandlerChanged ();
-}
-
-void KeystoneScreen::matchPropertyChanged (CompWindow *window)
-{
-    screen->matchPropertyChanged (window);
+    cScreen->damageScreen();
 }
 
 bool KeystoneScreen::ToggleViewportEnableDisable()
@@ -237,8 +199,8 @@ bool KeystoneScreen::AdjustKeystone(float hinc, float vinc)
     const float v = optionGetKsVert() + vinc;
     CompOption::Value vh(h);
     CompOption::Value vv(v);
-    getOptions()[KsHorz].set(vh);
-    getOptions()[KsVert].set(vv);
+    if( hinc ) KeystoneScreen::setOption(getOptions()[KsHorz].name().c_str(),vh);
+    if( vinc ) KeystoneScreen::setOption(getOptions()[KsVert].name(),vv);
     cScreen->damageScreen();
     return true;
 }

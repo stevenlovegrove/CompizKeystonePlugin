@@ -44,7 +44,7 @@ class KeystoneScreen :
 	void preparePaint (int);
 	void paint (CompOutput::ptrList &, unsigned int);
 	void donePaint ();
-	void handleEvent (XEvent *event);
+        void handleEvent (XEvent *event);
 
 	bool glPaintOutput (const GLScreenPaintAttrib &,
 			    const GLMatrix &, const CompRegion &,
@@ -53,13 +53,6 @@ class KeystoneScreen :
 				       const GLMatrix &,
 				       const CompRegion &,
 				       CompOutput *, unsigned int);
-
-	bool setOptionForPlugin (const char *, const char *,
-				 CompOption::Value&);
-	void matchExpHandlerChanged ();
-	void matchPropertyChanged (CompWindow *);
-
-	void releaseMoveWindow ();
 
 	void optionChanged (CompOption *opt, KeystoneOptions::Options num);
 
