@@ -190,6 +190,12 @@ bool KeystoneScreen::ToggleViewportEnableDisable()
     CompOption::Value v(!state);
     getOptions()[KsEnable].set(v);
     cScreen->damageScreen();
+    cout << "--------------------------------------" << endl;
+    cout << "h:\t" << optionGetKsHorz() << endl;
+    cout << "v:\t" << optionGetKsVert() << endl;
+    cout << "x:\t" << optionGetKsPosx() << endl;
+    cout << "y:\t" << optionGetKsPosy() << endl;
+    cout << "scale:\t" << optionGetKsScale() << endl;
     return true;
 }
 
@@ -236,7 +242,7 @@ KeystoneScreen::KeystoneScreen (CompScreen *screen) :
     CompositeScreenInterface::setHandler (cScreen);
     GLScreenInterface::setHandler (glScreen);
 
-    const float inc = 0.01;
+    const float inc = 0.001;
 
     optionSetKsEnableKeyInitiate(boost::bind(&KeystoneScreen::ToggleViewportEnableDisable, this));
     optionSetLeftKeyInitiate(    boost::bind(&KeystoneScreen::AdjustKeystone, this, -inc, 0));
@@ -254,7 +260,7 @@ KeystoneScreen::KeystoneScreen (CompScreen *screen) :
 
 #define setNotify(func) \
     optionSet##func##Notify (boost::bind (&KeystoneScreen::optionChanged, \
-					  this, _1, _2))
+                                          this, _1, _2))
 
     setNotify (KsEnable);
     setNotify (KsVert);
