@@ -1,7 +1,9 @@
-find_package (Compiz REQUIRED)
+PROJECT("CompizKeystone")
 
-include (CompizPlugin)
+find_package(Compiz REQUIRED)
+
+include(CompizPlugin)
 
 set(CMAKE_CXX_FLAGS "-g -Wall")
 
-compiz_plugin (keystone PLUGINDEPS composite opengl)
+compiz_plugin(keystone PLUGINDEPS composite opengl)
